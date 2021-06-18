@@ -5,7 +5,8 @@ mongoose
     .connect(MDB_URL,{
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
     },(err)=>{
         if(err) return console.log(err)
         console.log('Connected to mongodb')
