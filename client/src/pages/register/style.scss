@@ -1,0 +1,32 @@
+.signupPage{
+    max-width: 60%;
+    margin: auto;
+    width: 60%;
+    
+    &__container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    &__image{
+        display: none;
+        &-container{
+            width: 50%;
+
+            &-img{
+                width: 100%;
+                min-width: 270px;
+            }
+        }
+    }
+}
+
+@media screen and (min-width:1000px) {
+    .signupPage{
+        &__image{
+            display: block;
+        }
+    }
+}

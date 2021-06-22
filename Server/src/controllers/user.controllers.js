@@ -19,7 +19,7 @@ class User {
             if (username.length < 5) {
                 return res
                     .status(400)
-                    .json({ err: "Username more than 5 characters" });
+                    .send({ err: "Username more than 5 characters" });
             }
             if (validateUsername(username)) {
                 return res
@@ -123,15 +123,20 @@ class User {
                     .status(400)
                     .json({ err: "Complete fields" })
             }
-            if (await idInDb(id)) {
+
+            const tokenDecode = JWT.decode(req.params.id);
+            const uId = tokenDecode.id;
+
+            if (await idInDb(uId)) {
                 return res
                     .status(400)
                     .json({ err: "Invalid ID" });
             }
 
-            const user = await UserModel.findById(req.params.id);
+            const user = await UserModel.findById(uId);
             const data = {
                 username : user.uUsername,
+                id : user._id
             }
             return res
                 .status(200)

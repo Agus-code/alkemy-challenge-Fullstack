@@ -1,6 +1,7 @@
 const { validateConcept, idInDb } = require('../lib/validations');
 const budgetModel = require('../models/budget.model');
 const UserModel = require('../models/user.model');
+const JWT = require("jsonwebtoken");
 
 class budget {
 
@@ -74,7 +75,8 @@ class budget {
                     .status(400)
                     .json({ err: "Complete fields" });
             }
-            const uId = req.params.id;
+            const tokenDecode = JWT.decode(req.params.id);
+            const uId = tokenDecode.id;
             if (await idInDb(uId)) {
                 return res
                     .status(400)
@@ -98,31 +100,9 @@ class budget {
                 }
             });
 
-
-
-        }
-        catch (err) {
-            console.log(err);
-            return res
-                .status(500);
-        }
-    }
-
-    async getOneBudget(req, res) {
-        try {
-            const id = req.params.id;
-
-            const budgetData = await budgetModel.findById(id);
-
-            if (!budgetData) {
-                return res
-                    .status(400)
-                    .json({ err: "Invalid budget" });
-            }
-
-            return res
+            if (userBudgets.length === 0) return res
                 .status(200)
-                .json(budgetData);
+                .json("no one")
 
 
         }
@@ -141,7 +121,9 @@ class budget {
                     .status(400)
                     .json({ err: "Complete fields" });
             }
-            const uId = req.params.id;
+            const tokenDecode = JWT.decode(req.params.id);
+            const uId = tokenDecode.id;
+
             if (await idInDb(uId)) {
                 return res
                     .status(400)
@@ -154,7 +136,7 @@ class budget {
             const userBudgets = user.uBudgets;
 
             let budgetsData = [];
-            for (i = userBudgets.length - 1; i >= 0; i--) {
+            for (let i = userBudgets.length - 1; i >= 0; i--) {
                 const data = await budgetModel.findById(userBudgets[i]);
                 budgetsData.push(data)
                 if (i === 0 || budgetsData.length === 10) {
@@ -164,6 +146,10 @@ class budget {
                 }
             }
 
+            return res
+                .status(200)
+                .json({ info: "no budgets" })
+
         }
         catch (err) {
             console.log(err);
@@ -172,45 +158,45 @@ class budget {
         }
     }
 
-
-    async getMyBudgetsBy(req, res) {
+    async totalBudgets(req, res) {
         try {
-            const uId = req.params.id;
-            const filter = req.body.filter;
-
-            //---validations---
-            if (!uId || !filter) {
+            //---validation---
+            if (!req.params.id) {
                 return res
                     .status(400)
                     .json({ err: "Complete fields" });
             }
+            const tokenDecode = JWT.decode(req.params.id);
+            const uId = tokenDecode.id;
+
             if (await idInDb(uId)) {
                 return res
                     .status(400)
-                    .json({ err: "Invalid User" });
+                    .json({ err: "Invalid User" })
             }
             //---end validations---
 
             const user = await UserModel.findById(uId);
-
+            let totalSalary = 0;
             const userBudgets = user.uBudgets;
 
-            let budgetsByFilter = [];
-            for (i = userBudgets.length - 1; i >= 0; i--) {
+            for (let i = userBudgets.length - 1; i >= 0; i--) {
                 const data = await budgetModel.findById(userBudgets[i]);
-
-                if(data.bCategory === filter){
-                    budgetsByFilter.push(data);
+                if (data.bType === "income") {
+                    totalSalary = totalSalary + data.bAmount;
                 }
-                
+                if (data.bType === "expense") {
+                    totalSalary = totalSalary - data.bAmount;
+                }
                 if (i === 0) {
                     return res
                         .status(200)
-                        .json(budgetsByFilter)
+                        .json(totalSalary)
                 }
             }
-
-
+            return res
+                .status(200)
+                .json(totalSalary)
 
         }
         catch (err) {
@@ -222,17 +208,16 @@ class budget {
 
     async editBudget(req, res) {
         try {
-
             const { concept, amount, category, date } = req.body;
 
-            if (!concept || !amount || !category || !date || !req.body.params) {
+            if (!concept || !amount || !category || !date || !req.params.id) {
                 return res
                     .status(400)
                     .json({ err: "Complete fields" })
             }
 
             //---validations---
-            const bId = req.body.params;
+            const bId = req.params.id;
             const budgetData = await budgetModel.findById(bId);
             if (!budgetData) {
                 return res
@@ -248,12 +233,6 @@ class budget {
                 return res
                     .status(400)
                     .json({ err: "Invalid amount" });
-            }
-            if (!type === "income" || !type === "expense") {
-                console.log(type)
-                return res
-                    .status(400)
-                    .json({ err: "Invalid type" });
             }
             //---end validations--- 
 
@@ -290,14 +269,17 @@ class budget {
                     .status(200)
                     .json({ err: "Complete fields" })
             }
-            if (await idInDb(uId)) {
+
+            const tokenDecode = JWT.decode(uId);
+            const id = tokenDecode.id;
+            if (await idInDb(id)) {
                 return res
                     .status(400)
                     .json({ err: "Invalid User" })
             }
             //---end validations---
 
-            await UserModel.findByIdAndUpdate(uId,
+            await UserModel.findByIdAndUpdate(id,
                 { $pull: { uBudgets: req.params.id } }
             );
 

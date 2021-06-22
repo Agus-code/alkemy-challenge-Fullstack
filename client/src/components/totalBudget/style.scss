@@ -1,0 +1,90 @@
+.totalBudget{
+    margin-bottom: 30px;
+    position: relative;
+
+    &__container{
+        -webkit-box-shadow: 0 4px 5px 0 rgb(0 0 0 / 14%), 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 30%);
+        box-shadow: 0 4px 5px 0 rgb(0 0 0 / 14%), 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 30%);
+        padding: 15px;
+        border-radius: 14px;
+        text-align: center;
+        background-color: #576574;
+    }
+
+    &__username{
+        margin-bottom: 30px;
+
+        &-h3{
+            font-size: 1.8rem;
+            color: #ccc;
+            user-select: none;
+        }
+    }
+
+    &__balance{
+        color: #fff;
+        &-h4{
+            font-size: 1.2rem;
+        }
+
+        &-value{
+            margin-top: 10px;
+            font-size: 1.5rem;
+
+            &-number{
+                font-size: 3rem;
+            }
+
+            &.high{
+                color: #1dd1a1;
+            }
+            &.low{
+                color: #ee5253;
+            }
+        }
+    }
+
+    &__add{
+        margin-top: 20px;
+
+        &-link{
+            padding: 4px 10px;
+            background-color: #341f97;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 1px;
+            -webkit-box-shadow: 0 4px 5px 0 rgb(0 0 0 / 14%), 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 30%);
+            box-shadow: 0 4px 5px 0 rgb(0 0 0 / 14%), 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 30%);
+        }
+    }
+
+    &__loading{
+        height: 100%;
+        width: 100%;
+
+        &-circle{
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            border: 5px solid #5f27cd;
+            border-top-color: transparent;
+            margin: auto;
+            animation: loading 1s infinite;
+        }
+    }
+}
+
+@media screen and(min-width: 900px){
+    .totalBudget{
+        min-width: 400px;
+
+        &__add{
+            margin-top: 40px;
+            &-link{
+                padding: 12px 26px;
+            }
+        }
+    }
+    
+}
